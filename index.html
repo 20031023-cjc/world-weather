@@ -7,25 +7,19 @@
 
   <!-- Leaflet 地图样式 & 脚本 -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- 动画库 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-  <!-- 自定义样式 & 功能脚本 -->
+  <!-- 自定义样式 -->
   <link rel="stylesheet" href="style.css" />
+  <!-- 自定义脚本 -->
   <script defer src="app.js"></script>
 </head>
 <body>
-  <!-- 🌌 星空背景 -->
-  <canvas id="starCanvas"></canvas>
-
-  <!-- 🌙 夜间模式切换按钮 -->
-  <button id="toggleMode" aria-label="Toggle Night Mode">🌙</button>
-
-  <!-- 🚀 标题 -->
   <header class="animate__animated animate__fadeInDown">
-    <h1 id="pageTitle">🌏 WorldView</h1>
+    <h1>🌏 WorldView</h1>
     <div class="language-switch">
       <button data-lang="en">English</button>
       <button data-lang="zh">中文</button>
@@ -34,24 +28,28 @@
   </header>
 
   <main>
-    <!-- 🔍 搜索区域 -->
     <div class="search-box animate__animated animate__fadeInUp">
       <input type="text" id="cityInput" placeholder="Enter city name" />
-      <button id="searchBtn">🔍 Search</button>
-      <button id="useLocationBtn">📍 Use My Location</button>
+      <button onclick="getWeather()">🔍 Search</button>
+      <button onclick="getLocationWeather()" id="useLocationBtn">📍 Use My Location</button>
     </div>
 
-    <!-- 🧡 收藏城市列表区域 -->
-    <div id="favoritesList" class="animate__animated animate__fadeInUp"></div>
+    <!-- 地图控制按钮 -->
+    <div class="control-buttons">
+      <button onclick="toggleMapStyle()">🗺️ Map Style</button>
+      <button onclick="toggleNightMode()" id="toggleModeBtn">🌙 Night Mode</button>
+    </div>
 
-    <!-- 🗺️ 地图展示 -->
+    <!-- 地图区域 -->
     <div id="map" class="animate__animated animate__fadeIn"></div>
 
-    <!-- ☀️ 天气信息卡片 -->
-    <div id="weatherInfo" class="animate__animated animate__fadeInUp"></div>
+    <!-- 加载中动画 -->
+    <div id="loading" class="loading-spinner" style="display: none;"></div>
 
-    <!-- 🎎 文化信息卡片 -->
-    <div id="cultureInfo" class="animate__animated animate__fadeInUp"></div>
+    <!-- 天气信息卡 -->
+    <div id="weatherInfo" class="info-card animate__animated animate__fadeInUp"></div>
+    <!-- 文化信息卡 -->
+    <div id="cultureInfo" class="info-card animate__animated animate__fadeInUp"></div>
   </main>
 
   <footer>
