@@ -220,3 +220,62 @@ toggleButton.addEventListener("click", () => {
 
 // 页面初始时检测
 autoDetectNightMode();
+
+// ❤️ 收藏按钮添加动画
+function saveFavorite(city) {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  if (!favorites.includes(city)) {
+    favorites.push(city);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    updateFavoritesUI();
+  }
+
+  // ❤️ 动画效果：找到按钮并加动画类
+  const heartButton = document.querySelector("#weatherInfo button");
+  if (heartButton) {
+    heartButton.classList.add("favorite-popped");
+    setTimeout(() => heartButton.classList.remove("favorite-popped"), 400);
+  }
+}
+
+// 🌙 夜间按钮旋转动画
+const toggleButton = document.getElementById("toggleMode");
+toggleButton.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  localStorage.setItem("nightMode", isDark ? "dark" : "light");
+  toggleButton.textContent = isDark ? "☀️" : "🌙";
+
+  // 🔁 按钮旋转动画
+  toggleButton.classList.add("rotating");
+  setTimeout(() => toggleButton.classList.remove("rotating"), 600);
+});
+
+// 📍 地图点击动画（涟漪效果）
+map.on("click", async (e) => {
+  const lat = e.latlng.lat;
+  const lon = e.latlng.lng;
+
+  // ⭕ 涟漪效果
+  const ripple = document.createElement("div");
+  ripple.classList.add("map-ripple");
+  ripple.style.left = `${e.originalEvent.pageX - 50}px`;
+  ripple.style.top = `${e.originalEvent.pageY - 50}px`;
+  document.body.appendChild(ripple);
+  setTimeout(() => document.body.removeChild(ripple), 600);
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+    const data = await res.json();
+    const city = data.address.city || data.address.town || data.address.village || data.address.state;
+
+    if (city) {
+      document.getElementById("cityInput").value = city;
+      getWeather(city, lat, lon);
+    } else {
+      alert("No city found at this location.");
+    }
+  } catch (err) {
+    console.error("Reverse geocoding failed", err);
+  }
+});
