@@ -1,280 +1,167 @@
-/* 🌟 全局基础 */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(to bottom, #fdf6ec, #faeee7);
-  color: #4b2e1e;
-  text-align: center;
-  transition: background 0.5s ease, color 0.3s ease;
+// 🌍 WorldView v3.0 - app.js
+
+let currentLang = localStorage.getItem("language") || "en";
+
+const i18n = {
+  title: { en: "WorldView", zh: "世界视图", ja: "ワールドビュー" },
+  inputPlaceholder: { en: "Enter city name", zh: "输入城市名称", ja: "都市名を入力" },
+  search: { en: "Search", zh: "搜索", ja: "検索" },
+  useLocation: { en: "📍 Use My Location", zh: "📍 使用当前位置", ja: "📍 現在地を使う" },
+  weatherTitle: { en: "Weather in", zh: "天气：", ja: "天気：" },
+  culturalInfo: { en: "Cultural Info", zh: "文化信息", ja: "文化情報" },
+  languageLabel: { en: "Official Language(s):", zh: "官方语言：", ja: "公用語：" },
+  food: { en: "Famous Food:", zh: "代表食物：", ja: "名物料理：" },
+  greeting: { en: "Greeting:", zh: "打招呼方式：", ja: "挨拶：" },
+};
+
+function applyTranslations() {
+  document.title = i18n.title[currentLang];
+  document.getElementById("cityInput").placeholder = i18n.inputPlaceholder[currentLang];
+  document.querySelector(".search-box button").innerText = `🔍 ${i18n.search[currentLang]}`;
+  document.getElementById("useLocationBtn").innerText = i18n.useLocation[currentLang];
 }
 
-header {
-  background: linear-gradient(to right, #f3d5b5, #e7bb94);
-  color: #4b2e1e;
-  padding: 1.5rem 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: background 0.5s ease;
+// 切换语言
+const langButtons = document.querySelectorAll(".language-switch button");
+langButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    currentLang = btn.dataset.lang;
+    localStorage.setItem("language", currentLang);
+    applyTranslations();
+  });
+});
+
+// 初始化地图
+const map = L.map("map").setView([35.6895, 139.6917], 5);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>'
+}).addTo(map);
+
+map.on("click", function (e) {
+  const ripple = document.createElement("div");
+  ripple.className = "map-ripple";
+  ripple.style.left = `${e.originalEvent.pageX - 50}px`;
+  ripple.style.top = `${e.originalEvent.pageY - 50}px`;
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+
+  fetchCityDataByCoords(e.latlng.lat, e.latlng.lng);
+});
+
+// 使用城市名称获取天气
+async function getWeather() {
+  const city = document.getElementById("cityInput").value;
+  if (!city) return;
+  const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}`);
+  const geoData = await geoRes.json();
+  if (!geoData[0]) return;
+  const lat = geoData[0].lat;
+  const lon = geoData[0].lon;
+  fetchCityDataByCoords(lat, lon);
+  addFavorite(city);
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  letter-spacing: 1px;
+// 使用当前位置获取天气
+function getLocationWeather() {
+  navigator.geolocation.getCurrentPosition((position) => {
+    const { latitude, longitude } = position.coords;
+    fetchCityDataByCoords(latitude, longitude);
+  });
 }
 
-.language-switch {
-  margin-top: 1rem;
+async function fetchCityDataByCoords(lat, lon) {
+  map.setView([lat, lon], 8);
+
+  const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=2cb36c12d78b26cc6c0a916a648a7c1d&units=metric`);
+  const weatherData = await weatherRes.json();
+
+  document.getElementById("weatherInfo").innerHTML = `
+    <h2>${i18n.weatherTitle[currentLang]} ${weatherData.name}</h2>
+    <p>${weatherData.weather[0].description}, 🌡️ ${weatherData.main.temp}°C</p>
+  `;
+
+  document.getElementById("cultureInfo").innerHTML = `
+    <h3>${i18n.culturalInfo[currentLang]}</h3>
+    <p><strong>${i18n.languageLabel[currentLang]}</strong> ${weatherData.sys.country === "JP" ? "Japanese" : "English"}</p>
+    <p><strong>${i18n.food[currentLang]}</strong> ${getFamousFood(weatherData.sys.country)}</p>
+    <p><strong>${i18n.greeting[currentLang]}</strong> ${getGreeting(weatherData.sys.country)}</p>
+  `;
+
+  L.marker([lat, lon]).addTo(map);
 }
 
-.language-switch button {
-  margin: 0 5px;
-  padding: 8px 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  background-color: #f1c27b;
-  color: #fffaf5;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+// 简化文化信息（可拓展）
+function getFamousFood(countryCode) {
+  const foods = {
+    JP: "寿司 (Sushi)",
+    CN: "火锅 (Hotpot)",
+    US: "汉堡 (Burger)",
+    FR: "法式蜗牛 (Escargot)"
+  };
+  return foods[countryCode] || "Unknown";
 }
 
-.language-switch button:hover {
-  background-color: #e0a96d;
-  transform: scale(1.05);
+function getGreeting(countryCode) {
+  const greetings = {
+    JP: "こんにちは (Konnichiwa)",
+    CN: "你好 (Nǐ hǎo)",
+    US: "Hello",
+    FR: "Bonjour"
+  };
+  return greetings[countryCode] || "Hello";
 }
 
-/* 🔍 搜索区 */
-.search-box {
-  margin: 2rem auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+// 收藏城市功能
+function addFavorite(cityName) {
+  const favoritesDiv = document.getElementById("favoritesList");
+  const existing = Array.from(favoritesDiv.children).find(btn => btn.textContent === cityName);
+  if (existing) return;
+
+  const btn = document.createElement("button");
+  btn.textContent = cityName;
+  btn.onclick = () => {
+    document.getElementById("cityInput").value = cityName;
+    getWeather();
+    btn.classList.add("favorite-popped");
+    setTimeout(() => btn.classList.remove("favorite-popped"), 400);
+  };
+  favoritesDiv.appendChild(btn);
 }
 
-.search-box input[type="text"] {
-  padding: 10px 14px;
-  font-size: 1rem;
-  border: 1px solid #ddd0c8;
-  border-radius: 8px;
-  width: 250px;
-  max-width: 80%;
-  background-color: #fffaf5;
-  transition: box-shadow 0.2s ease, background-color 0.2s ease;
-}
+// 夜间模式切换
+const toggleBtn = document.getElementById("toggleMode");
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  toggleBtn.classList.add("rotating");
+  setTimeout(() => toggleBtn.classList.remove("rotating"), 600);
+});
 
-.search-box input[type="text"]:focus {
-  outline: none;
-  background-color: #fff3e6;
-  box-shadow: 0 0 0 3px #ffd7b5;
-}
+// 星空背景初始化
+const canvas = document.getElementById("starCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-.search-box button {
-  padding: 10px 16px;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  background-color: #f5c89c;
-  color: #4b2e1e;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-}
+const stars = Array.from({ length: 100 }, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  radius: Math.random() * 1.5,
+  alpha: Math.random()
+}));
 
-.search-box button:hover {
-  background-color: #f1b97e;
-  transform: scale(1.05);
-}
-
-/* 🗺️ 地图 */
-#map {
-  height: 420px;
-  margin: 30px auto;
-  max-width: 680px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
-}
-
-/* 💡 卡片风格（天气、文化、收藏） */
-#weatherInfo,
-#cultureInfo,
-#favoritesList {
-  margin: 2rem auto;
-  padding: 1.8rem;
-  background: #fffefc;
-  border-radius: 20px;
-  max-width: 680px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  text-align: left;
-  line-height: 1.7;
-  font-size: 1rem;
-  color: #4b2e1e;
-  backdrop-filter: blur(8px);
-}
-
-#weatherInfo h2,
-#cultureInfo h3,
-#favoritesList h3 {
-  color: #b45f06;
-}
-
-/* ❤️ 收藏城市按钮 */
-#favoritesList button {
-  display: inline-block;
-  margin: 6px 8px;
-  padding: 6px 12px;
-  border: none;
-  background-color: #f3d5b5;
-  border-radius: 10px;
-  color: #4b2e1e;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-#favoritesList button:hover {
-  background-color: #e4ba91;
-  transform: scale(1.05);
-}
-
-/* 📍 夜间模式按钮 */
-#toggleMode {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 999;
-  background-color: #ffffffaa;
-  color: #222;
-  border: none;
-  border-radius: 50%;
-  padding: 10px 14px;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
-}
-
-#toggleMode:hover {
-  background-color: #dddddd;
-}
-
-/* 🌑 夜间模式 */
-body.dark {
-  background: #0e0e1a;
-  color: #f0f0f0;
-}
-
-body.dark header {
-  background: linear-gradient(to right, #1f1f3a, #2a2a4d);
-  color: #f0f0f0;
-}
-
-body.dark .language-switch button,
-body.dark .search-box button {
-  background-color: #444;
-  color: #f0f0f0;
-}
-
-body.dark .search-box input[type="text"] {
-  background-color: #1f1f1f;
-  color: #f0f0f0;
-  border: 1px solid #555;
-}
-
-body.dark #weatherInfo,
-body.dark #cultureInfo,
-body.dark #favoritesList {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  color: #f0f0f0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 📱 响应式 */
-@media screen and (max-width: 600px) {
-  #map,
-  #weatherInfo,
-  #cultureInfo,
-  #favoritesList {
-    width: 92%;
+function animateStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let star of stars) {
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+    ctx.fill();
+    star.alpha += (Math.random() - 0.5) * 0.05;
+    if (star.alpha < 0.1) star.alpha = 0.1;
+    if (star.alpha > 1) star.alpha = 1;
   }
+  requestAnimationFrame(animateStars);
+}
+animateStars();
 
-  .search-box {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .search-box input[type="text"],
-  .search-box button {
-    width: 90%;
-    max-width: 320px;
-  }
-
-  .language-switch button {
-    margin-bottom: 0.5rem;
-  }
-}
-
-/* 💫 hover 效果发光 */
-button:hover {
-  box-shadow: 0 0 12px rgba(255, 200, 150, 0.5);
-}
-
-/* ❤️ 收藏按钮点击动画 */
-@keyframes heartPop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.4); }
-  100% { transform: scale(1); }
-}
-.favorite-popped {
-  animation: heartPop 0.4s ease;
-}
-
-/* 🌙 夜间按钮旋转动画 */
-@keyframes rotateBtn {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(180deg) scale(1.2); }
-  100% { transform: rotate(360deg); }
-}
-.rotating {
-  animation: rotateBtn 0.6s ease;
-}
-
-/* 📍 地图点击涟漪 */
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-.map-ripple {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  animation: ripple 0.6s ease-out;
-  z-index: 9999;
-}
-
-/* 🌌 星空背景 Canvas */
-#starCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100vw;
-  height: 100vh;
-  background: transparent;
-  pointer-events: none;
-}
+applyTranslations();
