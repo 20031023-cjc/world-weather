@@ -282,3 +282,15 @@ button:hover {
   animation-duration: 1s;
   animation-fill-mode: both;
 }
+/* 🌌 星空背景 Canvas */
+#starCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  pointer-events: none;
+}
+
