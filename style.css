@@ -2,7 +2,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #fdf6ec, #faeee7);
+  background: transparent; /* ⭐ 改为透明，露出星空背景 */
   color: #4b2e1e;
   text-align: center;
   transition: background 0.5s ease, color 0.3s ease;
@@ -170,7 +170,7 @@ footer {
 
 /* 🌑 夜间模式 */
 body.dark {
-  background: #0e0e1a;
+  background: transparent;
   color: #f0f0f0;
 }
 
@@ -282,6 +282,7 @@ button:hover {
   animation-duration: 1s;
   animation-fill-mode: both;
 }
+
 /* 🌌 星空背景 Canvas */
 #starCanvas {
   position: fixed;
@@ -293,4 +294,3 @@ button:hover {
   background: transparent;
   pointer-events: none;
 }
-
