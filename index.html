@@ -17,12 +17,13 @@
   <script defer src="app.js"></script>
 </head>
 <body>
-  <!-- 🌌 星空背景 canvas -->
+  <!-- 🌌 星空背景 -->
   <canvas id="starCanvas"></canvas>
 
   <!-- 🌙 夜间模式切换按钮 -->
   <button id="toggleMode">🌙</button>
 
+  <!-- 🚀 标题 -->
   <header class="animate__animated animate__fadeInDown">
     <h1>🌏 WorldView</h1>
     <div class="language-switch">
@@ -33,6 +34,7 @@
   </header>
 
   <main>
+    <!-- 🔍 搜索区域 -->
     <div class="search-box animate__animated animate__fadeInUp">
       <input type="text" id="cityInput" placeholder="Enter city name" />
       <button onclick="getWeather()">🔍 Search</button>
@@ -42,9 +44,13 @@
     <!-- 🧡 收藏城市列表区域 -->
     <div id="favoritesList" class="animate__animated animate__fadeInUp"></div>
 
+    <!-- 🗺️ 地图展示 -->
     <div id="map" class="animate__animated animate__fadeIn"></div>
 
+    <!-- ☀️ 天气信息卡片 -->
     <div id="weatherInfo" class="animate__animated animate__fadeInUp"></div>
+
+    <!-- 🎎 文化信息卡片 -->
     <div id="cultureInfo" class="animate__animated animate__fadeInUp"></div>
   </main>
 
