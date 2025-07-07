@@ -106,7 +106,7 @@ header h1 {
 #favoritesList {
   margin: 2rem auto;
   padding: 1.8rem;
-  background: #fffefc;
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 20px;
   max-width: 680px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
@@ -114,7 +114,7 @@ header h1 {
   line-height: 1.7;
   font-size: 1rem;
   color: #4b2e1e;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 #weatherInfo h2,
@@ -275,6 +275,6 @@ button:hover {
   z-index: -1;
   width: 100vw;
   height: 100vh;
-  background: transparent;
+  background: radial-gradient(#0c0c2c, #000000);
   pointer-events: none;
 }
