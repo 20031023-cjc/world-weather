@@ -1,28 +1,15 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WorldView</title>
-  <!-- Leaflet 地图样式 -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- 动画库 Animate.css -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <!-- 自定义样式 -->
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-  <!-- 加载遮罩 -->
-  <div id="loadingOverlay" class="hidden">
-    <div class="spinner"></div>
-  </div>
-
-  <header class="animate__animated animate__fadeInDown">
-    <div class="logo animate__animated animate__pulse">🌐</div>
-    <h1 class="title animate__animated animate__rubberBand">WorldView</h1>
-    <button id="toggleTheme" class="theme-btn">🌓</button>
+  <header>
+    <h1 class="title">WorldView</h1>
     <div class="language-switch">
       <button data-lang="en">EN</button>
       <button data-lang="zh">中</button>
@@ -31,48 +18,43 @@
   </header>
 
   <main>
-    <div class="controls animate__animated animate__fadeInUp">
-      <div class="search-box">
-        <input type="text" id="cityInput" placeholder="Enter city name"/>
-        <button id="searchBtn">🔍 Search</button>
-        <button id="useLocationBtn">📍 Use My Location</button>
-      </div>
-      <div class="history">
-        <h4>Search History</h4>
-        <ul id="historyList"></ul>
-      </div>
-      <div class="map-style-switch">
-        <label for="mapStyleSelect">Map Style:</label>
-        <select id="mapStyleSelect">
-          <option value="osm">Default</option>
-          <option value="dark">Dark</option>
-          <option value="hydda">Illustrated</option>
-        </select>
-      </div>
-    </div>
+    <input id="cityInput" placeholder="Enter city name" />
+    <button id="searchBtn">🔍 Search</button>
+    <button id="useLocationBtn">📍 Use My Location</button>
 
-    <div id="map" class="animate__animated animate__fadeIn"></div>
+    <section class="history">
+      <h3>Search History</h3>
+      <ul id="historyList"></ul>
+    </section>
 
-    <div class="info-cards">
+    <label for="mapStyleSelect">Map Style:</label>
+    <select id="mapStyleSelect">
+      <option value="osm">Default</option>
+      <option value="dark">Dark</option>
+      <option value="hydda">Hydda</option>
+    </select>
+
+    <div id="map" style="height: 400px; margin-top: 20px;"></div>
+
+    <div class="cards">
       <div class="info-card weather-card">
-        <div class="card-inner">
-          <div class="front"></div>
-          <div class="back"></div>
-        </div>
+        <div class="front"></div>
+        <div class="back"></div>
       </div>
       <div class="info-card culture-card">
-        <div class="card-inner">
-          <div class="front"></div>
-          <div class="back"></div>
-        </div>
+        <div class="front"></div>
+        <div class="back"></div>
       </div>
     </div>
   </main>
 
-  <footer>
-    <p>Made by Cai Jiacheng | GitHub: <a href="https://github.com/20031023-cjc" target="_blank">20031023-cjc</a></p>
-  </footer>
+  <div id="loadingOverlay" class="hidden">
+    <div class="spinner"></div>
+  </div>
 
-  <script defer src="app.js"></script>
+  <button id="toggleTheme">🌗</button>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
