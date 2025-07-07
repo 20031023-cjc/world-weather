@@ -1,20 +1,19 @@
-/* WorldView v3.0 CSS */
-
+/* 🌟 全局基础 */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #0b0c2a, #1a1b3a);
-  color: #f5f5f5;
+  background: linear-gradient(to bottom, #fdf6ec, #faeee7);
+  color: #4b2e1e;
   text-align: center;
   transition: background 0.5s ease, color 0.3s ease;
 }
 
 header {
-  background: linear-gradient(to right, #3a2d67, #4c3c88);
-  color: #f0f0f0;
+  background: linear-gradient(to right, #f3d5b5, #e7bb94);
+  color: #4b2e1e;
   padding: 1.5rem 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: background 0.5s ease;
 }
 
@@ -24,55 +23,147 @@ header h1 {
   letter-spacing: 1px;
 }
 
-.language-switch button,
-.search-box button,
-#favoritesList button {
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+.language-switch {
+  margin-top: 1rem;
 }
 
-.language-switch button:hover,
-.search-box button:hover,
-#favoritesList button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 12px rgba(255, 200, 150, 0.6);
+.language-switch button {
+  margin: 0 5px;
+  padding: 8px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: #f1c27b;
+  color: #fffaf5;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
+.language-switch button:hover {
+  background-color: #e0a96d;
+  transform: scale(1.05);
+}
+
+/* 🔍 搜索区 */
+.search-box {
+  margin: 2rem auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-box input[type="text"] {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1px solid #ddd0c8;
+  border-radius: 8px;
+  width: 250px;
+  max-width: 80%;
+  background-color: #fffaf5;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.search-box input[type="text"]:focus {
+  outline: none;
+  background-color: #fff3e6;
+  box-shadow: 0 0 0 3px #ffd7b5;
+}
+
+.search-box button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5c89c;
+  color: #4b2e1e;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.search-box button:hover {
+  background-color: #f1b97e;
+  transform: scale(1.05);
+}
+
+/* 🗺️ 地图 */
+#map {
+  height: 420px;
+  margin: 30px auto;
+  max-width: 680px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* 💡 卡片风格（天气、文化、收藏） */
 #weatherInfo,
 #cultureInfo,
 #favoritesList {
-  backdrop-filter: blur(12px) brightness(1.1);
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  color: #fff;
+  margin: 2rem auto;
+  padding: 1.8rem;
+  background: #fffefc;
   border-radius: 20px;
+  max-width: 680px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  text-align: left;
+  line-height: 1.7;
+  font-size: 1rem;
+  color: #4b2e1e;
+  backdrop-filter: blur(8px);
 }
 
-#starCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100vw;
-  height: 100vh;
-  background: transparent;
-  pointer-events: none;
+#weatherInfo h2,
+#cultureInfo h3,
+#favoritesList h3 {
+  color: #b45f06;
 }
 
+/* ❤️ 收藏城市按钮 */
+#favoritesList button {
+  display: inline-block;
+  margin: 6px 8px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #f3d5b5;
+  border-radius: 10px;
+  color: #4b2e1e;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#favoritesList button:hover {
+  background-color: #e4ba91;
+  transform: scale(1.05);
+}
+
+/* 📍 夜间模式按钮 */
 #toggleMode {
-  background-color: #ffffffaa;
-  color: #222;
-  border-radius: 50%;
-  padding: 10px 14px;
-  font-size: 20px;
   position: fixed;
   top: 16px;
   right: 16px;
   z-index: 999;
+  background-color: #ffffffaa;
+  color: #222;
+  border: none;
+  border-radius: 50%;
+  padding: 10px 14px;
+  font-size: 20px;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
 }
 
-/* Night mode tweaks */
+#toggleMode:hover {
+  background-color: #dddddd;
+}
+
+/* 🌑 夜间模式 */
 body.dark {
   background: #0e0e1a;
   color: #f0f0f0;
@@ -83,16 +174,88 @@ body.dark header {
   color: #f0f0f0;
 }
 
+body.dark .language-switch button,
+body.dark .search-box button {
+  background-color: #444;
+  color: #f0f0f0;
+}
+
+body.dark .search-box input[type="text"] {
+  background-color: #1f1f1f;
+  color: #f0f0f0;
+  border: 1px solid #555;
+}
+
 body.dark #weatherInfo,
 body.dark #cultureInfo,
 body.dark #favoritesList {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 星空动画粒子默认保留 */
+/* 📱 响应式 */
+@media screen and (max-width: 600px) {
+  #map,
+  #weatherInfo,
+  #cultureInfo,
+  #favoritesList {
+    width: 92%;
+  }
+
+  .search-box {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-box input[type="text"],
+  .search-box button {
+    width: 90%;
+    max-width: 320px;
+  }
+
+  .language-switch button {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* 💫 hover 效果发光 */
+button:hover {
+  box-shadow: 0 0 12px rgba(255, 200, 150, 0.5);
+}
+
+/* ❤️ 收藏按钮点击动画 */
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.favorite-popped {
+  animation: heartPop 0.4s ease;
+}
+
+/* 🌙 夜间按钮旋转动画 */
+@keyframes rotateBtn {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg); }
+}
+.rotating {
+  animation: rotateBtn 0.6s ease;
+}
+
+/* 📍 地图点击涟漪 */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
 .map-ripple {
   position: absolute;
   width: 100px;
@@ -102,4 +265,16 @@ body.dark #favoritesList {
   pointer-events: none;
   animation: ripple 0.6s ease-out;
   z-index: 9999;
+}
+
+/* 🌌 星空背景 Canvas */
+#starCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  pointer-events: none;
 }
