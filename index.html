@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WorldView</title>
+
+  <!-- Leaflet 地图样式 & 脚本 -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- 动画库 & 字体 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" />
+
+  <!-- 样式 & JS -->
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="app.js"></script>
+</head>
+<body class="dark">
+  <!-- 夜间模式切换按钮 -->
+  <button id="toggleMode">🌓</button>
+
+  <header class="animate__animated animate__fadeInDown">
+    <h1>🌏 WorldView</h1>
+    <div class="language-switch">
+      <button data-lang="en">English</button>
+      <button data-lang="zh">中文</button>
+      <button data-lang="ja">日本語</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="search-box animate__animated animate__fadeInUp">
+      <input type="text" id="cityInput" placeholder="Enter city name" />
+      <button onclick="getWeather()">🔍 Search</button>
+      <button onclick="getLocationWeather()" id="useLocationBtn">📍 Use My Location</button>
+    </div>
+
+    <div id="map" class="animate__animated animate__fadeIn"></div>
+
+    <!-- 翻转卡片结构容器 -->
+    <div id="weatherInfo" class="card flip-card animate__animated animate__fadeInUp"></div>
+    <div id="cultureInfo" class="card flip-card animate__animated animate__fadeInUp"></div>
+
+    <!-- 最近搜索城市展示 -->
+    <div id="recentSearches"></div>
+  </main>
+
+  <footer>
+    <p>Made by Cai Jiacheng | Hosted on GitHub</p>
+  </footer>
+
+  <!-- 加载中动画 -->
+  <div id="loading" class="loading-spinner hidden"></div>
+</body>
+</html>
