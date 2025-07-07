@@ -228,3 +228,57 @@ body.dark #favoritesList {
     margin-bottom: 0.5rem;
   }
 }
+
+/* 🔘 所有按钮增加hover发光 + 呼吸感 */
+button:hover {
+  box-shadow: 0 0 12px rgba(255, 200, 150, 0.5);
+}
+
+/* ❤️ 收藏按钮点击动画 */
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.favorite-popped {
+  animation: heartPop 0.4s ease;
+}
+
+/* 🌙 夜间按钮旋转 */
+@keyframes rotateBtn {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg); }
+}
+.rotating {
+  animation: rotateBtn 0.6s ease;
+}
+
+/* 📍 地图点击涟漪 */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.map-ripple {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  animation: ripple 0.6s ease-out;
+  z-index: 9999;
+}
+
+/* 卡片进入动画（加强） */
+.animate__fadeInUpBig {
+  animation-name: fadeInUpBig;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
