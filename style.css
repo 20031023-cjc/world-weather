@@ -1,4 +1,3 @@
-/* 🌟 全局基础 */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
@@ -6,9 +5,27 @@ body {
   background: linear-gradient(to bottom, #fdf6ec, #faeee7);
   color: #4b2e1e;
   text-align: center;
-  transition: background 0.5s ease, color 0.3s ease;
+  transition: background 0.6s ease, color 0.3s ease;
 }
 
+/* 夜间模式背景 + 星空 */
+body.dark {
+  background: radial-gradient(#0b0c2a, #000000);
+  color: #ffffff;
+}
+
+/* 星星背景层 */
+body.dark::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('https://cdn.pixabay.com/photo/2017/08/30/07/52/stars-2695569_1280.jpg') repeat;
+  background-size: cover;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+/* 顶部栏 */
 header {
   background: linear-gradient(to right, #f3d5b5, #e7bb94);
   color: #4b2e1e;
@@ -40,12 +57,16 @@ header h1 {
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
+.language-switch button.active {
+  background-color: #b45f06;
+}
+
 .language-switch button:hover {
   background-color: #e0a96d;
   transform: scale(1.05);
 }
 
-/* 🔍 搜索区 */
+/* 搜索栏 */
 .search-box {
   margin: 2rem auto;
   display: flex;
@@ -90,7 +111,29 @@ header h1 {
   transform: scale(1.05);
 }
 
-/* 🗺️ 地图 */
+/* 控制按钮区域（地图样式/夜间模式） */
+.control-buttons {
+  margin-bottom: 1rem;
+}
+
+.control-buttons button {
+  margin: 0 8px;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  background-color: #e6b98e;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.control-buttons button:hover {
+  background-color: #d49b6d;
+  transform: scale(1.05);
+}
+
+/* 地图区域 */
 #map {
   height: 420px;
   margin: 30px auto;
@@ -100,107 +143,60 @@ header h1 {
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
 }
 
-/* 💡 卡片风格（天气、文化、收藏） */
-#weatherInfo,
-#cultureInfo,
-#favoritesList {
+/* 加载动画 */
+.loading-spinner {
+  margin: 20px auto;
+  border: 6px solid #eee;
+  border-top: 6px solid #f1c27b;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 信息卡片（毛玻璃风格） */
+.info-card {
   margin: 2rem auto;
   padding: 1.8rem;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
   max-width: 680px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   text-align: left;
   line-height: 1.7;
   font-size: 1rem;
   color: #4b2e1e;
-  backdrop-filter: blur(10px);
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+body.dark .info-card {
+  background: rgba(20, 20, 40, 0.5);
+  color: #ffffff;
 }
 
 #weatherInfo h2,
-#cultureInfo h3,
-#favoritesList h3 {
+#cultureInfo h3 {
   color: #b45f06;
 }
 
-/* ❤️ 收藏城市按钮 */
-#favoritesList button {
-  display: inline-block;
-  margin: 6px 8px;
-  padding: 6px 12px;
-  border: none;
-  background-color: #f3d5b5;
-  border-radius: 10px;
-  color: #4b2e1e;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+/* 页脚 */
+footer {
+  margin-top: 3rem;
+  padding: 1rem;
+  background: #f9f1e7;
+  color: #7c5c4b;
+  font-size: 0.9rem;
 }
 
-#favoritesList button:hover {
-  background-color: #e4ba91;
-  transform: scale(1.05);
-}
-
-/* 📍 夜间模式按钮 */
-#toggleMode {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 999;
-  background-color: #ffffffaa;
-  color: #222;
-  border: none;
-  border-radius: 50%;
-  padding: 10px 14px;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
-}
-
-#toggleMode:hover {
-  background-color: #dddddd;
-}
-
-/* 🌑 夜间模式 */
-body.dark {
-  background: #0e0e1a;
-  color: #f0f0f0;
-}
-
-body.dark header {
-  background: linear-gradient(to right, #1f1f3a, #2a2a4d);
-  color: #f0f0f0;
-}
-
-body.dark .language-switch button,
-body.dark .search-box button {
-  background-color: #444;
-  color: #f0f0f0;
-}
-
-body.dark .search-box input[type="text"] {
-  background-color: #1f1f1f;
-  color: #f0f0f0;
-  border: 1px solid #555;
-}
-
-body.dark #weatherInfo,
-body.dark #cultureInfo,
-body.dark #favoritesList {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  color: #f0f0f0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 📱 响应式 */
+/* 小屏适配 */
 @media screen and (max-width: 600px) {
   #map,
-  #weatherInfo,
-  #cultureInfo,
-  #favoritesList {
+  .info-card {
     width: 92%;
   }
 
@@ -210,7 +206,8 @@ body.dark #favoritesList {
   }
 
   .search-box input[type="text"],
-  .search-box button {
+  .search-box button,
+  .control-buttons button {
     width: 90%;
     max-width: 320px;
   }
@@ -218,63 +215,4 @@ body.dark #favoritesList {
   .language-switch button {
     margin-bottom: 0.5rem;
   }
-}
-
-/* 💫 hover 效果发光 */
-button:hover {
-  box-shadow: 0 0 12px rgba(255, 200, 150, 0.5);
-}
-
-/* ❤️ 收藏按钮点击动画 */
-@keyframes heartPop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.4); }
-  100% { transform: scale(1); }
-}
-.favorite-popped {
-  animation: heartPop 0.4s ease;
-}
-
-/* 🌙 夜间按钮旋转动画 */
-@keyframes rotateBtn {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(180deg) scale(1.2); }
-  100% { transform: rotate(360deg); }
-}
-.rotating {
-  animation: rotateBtn 0.6s ease;
-}
-
-/* 📍 地图点击涟漪 */
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-.map-ripple {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  animation: ripple 0.6s ease-out;
-  z-index: 9999;
-}
-
-/* 🌌 星空背景 Canvas */
-#starCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(#0c0c2c, #000000);
-  pointer-events: none;
 }
