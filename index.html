@@ -7,7 +7,7 @@
 
   <!-- Leaflet 地图样式 & 脚本 -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- 动画库 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -21,11 +21,11 @@
   <canvas id="starCanvas"></canvas>
 
   <!-- 🌙 夜间模式切换按钮 -->
-  <button id="toggleMode">🌙</button>
+  <button id="toggleMode" aria-label="Toggle Night Mode">🌙</button>
 
   <!-- 🚀 标题 -->
   <header class="animate__animated animate__fadeInDown">
-    <h1>🌏 WorldView</h1>
+    <h1 id="pageTitle">🌏 WorldView</h1>
     <div class="language-switch">
       <button data-lang="en">English</button>
       <button data-lang="zh">中文</button>
@@ -37,8 +37,8 @@
     <!-- 🔍 搜索区域 -->
     <div class="search-box animate__animated animate__fadeInUp">
       <input type="text" id="cityInput" placeholder="Enter city name" />
-      <button onclick="getWeather()">🔍 Search</button>
-      <button onclick="getLocationWeather()" id="useLocationBtn">📍 Use My Location</button>
+      <button id="searchBtn">🔍 Search</button>
+      <button id="useLocationBtn">📍 Use My Location</button>
     </div>
 
     <!-- 🧡 收藏城市列表区域 -->
