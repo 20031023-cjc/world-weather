@@ -1,5 +1,5 @@
-// 🌐 多语言 定义
 let currentLang = localStorage.getItem("language") || "en";
+
 const i18n = {
   title: { en: "WorldView", zh: "世界视图", ja: "ワールドビュー" },
   inputPlaceholder: { en: "Enter city name", zh: "输入城市名称", ja: "都市名を入力" },
@@ -14,11 +14,14 @@ const i18n = {
   error: { en: "⚠️ Could not fetch weather data.", zh: "⚠️ 无法获取天气信息。", ja: "⚠️ 天気情報を取得できませんでした。" },
 };
 
-// Loading overlay
-function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
-function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
 
-// 地图初始化 & 样式切换
+// 地图初始化
 const map = L.map('map').setView([20, 0], 2);
 let tileLayer;
 function setMapStyle(style) {
@@ -33,7 +36,6 @@ function setMapStyle(style) {
 document.getElementById('mapStyleSelect').addEventListener('change', e => setMapStyle(e.target.value));
 setMapStyle('osm');
 
-// 地图点击获取城市
 map.on('click', async e => {
   const { lat, lng } = e.latlng;
   try {
@@ -51,7 +53,6 @@ map.on('click', async e => {
   }
 });
 
-// 搜索历史管理
 let historyArr = JSON.parse(localStorage.getItem('searchHistory')) || [];
 function renderHistory() {
   const ul = document.getElementById('historyList');
@@ -73,30 +74,29 @@ function addHistory(city) {
 }
 renderHistory();
 
-// 获取并展示天气与文化
 async function getWeather(city = null, lat = null, lon = null) {
   showLoading();
-  const input = document.getElementById('cityInput');
-  city = city || input.value;
-  const weatherFront = document.querySelector('.weather-card .front');
-  const weatherBack = document.querySelector('.weather-card .back');
-  const cultureFront = document.querySelector('.culture-card .front');
-  const cultureBack = document.querySelector('.culture-card .back');
-
-  if (!city) {
-    weatherFront.innerHTML = i18n.error[currentLang];
-    hideLoading();
-    return;
-  }
-  const key = 'd0c82cf6ceae567537e0079215ab67dd';
-  const url = lat && lon
-    ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${key}`
-    : `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${key}`;
-
   try {
+    const input = document.getElementById('cityInput');
+    city = city || input.value;
+    if (!city) throw new Error("No city provided");
+
+    const weatherFront = document.querySelector('.weather-card .front');
+    const weatherBack = document.querySelector('.weather-card .back');
+    const cultureFront = document.querySelector('.culture-card .front');
+    const cultureBack = document.querySelector('.culture-card .back');
+
+    const key = 'd0c82cf6ceae567537e0079215ab67dd';
+    const url = lat && lon
+      ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${key}`
+      : `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${key}`;
+
+    console.log("Fetching weather from:", url);
+
     const res = await fetch(url);
     if (!res.ok) throw new Error('City not found');
     const data = await res.json();
+
     const temp = data.main.temp;
     const desc = data.weather[0].description;
     const icon = data.weather[0].icon;
@@ -108,7 +108,6 @@ async function getWeather(city = null, lat = null, lon = null) {
     map.setView([latU, lonU], 8);
     L.marker([latU, lonU]).addTo(map);
 
-    // 天气卡片
     weatherFront.innerHTML = `
       <h2>${i18n.weatherTitle[currentLang]} ${city}</h2>
       <img src="${iconUrl}" alt="${desc}" />
@@ -120,13 +119,13 @@ async function getWeather(city = null, lat = null, lon = null) {
       <p>Country: ${countryCode}</p>
     `;
 
-    // 文化信息
     const cRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
     const cData = await cRes.json();
     const country = cData[0];
     const name = country.name.common;
     const flag = country.flags.svg;
     const langs = Object.values(country.languages).join(', ');
+
     const templates = {
       JP: { food: 'Sushi 🍣', greeting: 'こんにちは', etiquette: 'Bowing 🙇‍♂️' },
       CN: { food: 'Dumplings 🥟', greeting: '你好', etiquette: 'Respect with both hands 🤲' },
@@ -148,10 +147,11 @@ async function getWeather(city = null, lat = null, lon = null) {
       <p><strong>${i18n.etiquette[currentLang]}</strong> ${cult.etiquette}</p>
     `;
 
+    localStorage.setItem('lastCity', city);
     addHistory(city);
   } catch (err) {
-    weatherFront.innerHTML = i18n.error[currentLang];
-    console.error(err);
+    console.error("Weather fetch error:", err);
+    document.querySelector('.weather-card .front').innerHTML = i18n.error[currentLang];
   } finally {
     hideLoading();
   }
@@ -160,7 +160,6 @@ async function getWeather(city = null, lat = null, lon = null) {
 document.getElementById('searchBtn').onclick = () => getWeather();
 document.getElementById('useLocationBtn').onclick = () => getLocationWeather();
 
-// 获取地理位置
 function getLocationWeather() {
   if (!navigator.geolocation) return alert('Geolocation not supported');
   showLoading();
@@ -180,12 +179,10 @@ function getLocationWeather() {
   }, () => { alert('Unable to retrieve location'); hideLoading(); });
 }
 
-// 卡片翻转
 document.querySelectorAll('.info-card').forEach(card => {
   card.addEventListener('click', () => card.classList.toggle('flipped'));
 });
 
-// 主题切换
 const toggleBtn = document.getElementById('toggleTheme');
 function loadTheme() {
   const t = localStorage.getItem('theme') || 'light';
@@ -197,7 +194,6 @@ toggleBtn.addEventListener('click', () => {
 });
 loadTheme();
 
-// 多语言支持
 function highlightLang() {
   document.querySelectorAll('.language-switch button').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === currentLang));
 }
