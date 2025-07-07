@@ -1,4 +1,3 @@
-
 // 🌐 多语言 定义
 let currentLang = localStorage.getItem("language") || "en";
 const i18n = {
@@ -16,14 +15,14 @@ const i18n = {
 };
 
 // Loading overlay
-function showLoading(){ document.getElementById('loadingOverlay').classList.remove('hidden'); }
-function hideLoading(){ document.getElementById('loadingOverlay').classList.add('hidden'); }
+function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
+function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
 
 // 地图初始化 & 样式切换
-const map = L.map('map').setView([20,0],2);
+const map = L.map('map').setView([20, 0], 2);
 let tileLayer;
-function setMapStyle(style){
-  if(tileLayer) map.removeLayer(tileLayer);
+function setMapStyle(style) {
+  if (tileLayer) map.removeLayer(tileLayer);
   const urls = {
     osm: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
@@ -41,25 +40,33 @@ map.on('click', async e => {
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
     const data = await res.json();
     const city = data.address.city || data.address.town || data.address.village || data.address.state;
-    if(city){ document.getElementById('cityInput').value = city; getWeather(city, lat, lng); }
-    else alert('No city found at this location.');
-  } catch(err){ console.error('Reverse geocoding failed', err); }
+    if (city) {
+      document.getElementById('cityInput').value = city;
+      getWeather(city, lat, lng);
+    } else {
+      alert('No city found at this location.');
+    }
+  } catch (err) {
+    console.error('Reverse geocoding failed', err);
+  }
 });
 
 // 搜索历史管理
-let historyArr = JSON.parse(localStorage.getItem('searchHistory'))||[];
-function renderHistory(){
-  const ul = document.getElementById('historyList'); ul.innerHTML='';
-  historyArr.forEach(city=>{
-    const li = document.createElement('li'); li.textContent=city;
+let historyArr = JSON.parse(localStorage.getItem('searchHistory')) || [];
+function renderHistory() {
+  const ul = document.getElementById('historyList');
+  ul.innerHTML = '';
+  historyArr.forEach(city => {
+    const li = document.createElement('li');
+    li.textContent = city;
     li.onclick = () => getWeather(city);
     ul.appendChild(li);
   });
 }
-function addHistory(city){
-  if(!historyArr.includes(city)){
+function addHistory(city) {
+  if (!historyArr.includes(city)) {
     historyArr.unshift(city);
-    if(historyArr.length>10) historyArr.pop();
+    if (historyArr.length > 10) historyArr.pop();
     localStorage.setItem('searchHistory', JSON.stringify(historyArr));
     renderHistory();
   }
@@ -67,23 +74,28 @@ function addHistory(city){
 renderHistory();
 
 // 获取并展示天气与文化
-async function getWeather(city=null, lat=null, lon=null){
+async function getWeather(city = null, lat = null, lon = null) {
   showLoading();
-  const input = document.getElementById('cityInput'); city = city||input.value;
+  const input = document.getElementById('cityInput');
+  city = city || input.value;
   const weatherFront = document.querySelector('.weather-card .front');
   const weatherBack = document.querySelector('.weather-card .back');
   const cultureFront = document.querySelector('.culture-card .front');
   const cultureBack = document.querySelector('.culture-card .back');
 
-  if(!city){ weatherFront.innerHTML = i18n.error[currentLang]; hideLoading(); return; }
+  if (!city) {
+    weatherFront.innerHTML = i18n.error[currentLang];
+    hideLoading();
+    return;
+  }
   const key = 'd0c82cf6ceae567537e0079215ab67dd';
-  const url = lat&&lon
+  const url = lat && lon
     ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${key}`
     : `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${key}`;
 
   try {
     const res = await fetch(url);
-    if(!res.ok) throw new Error('City not found');
+    if (!res.ok) throw new Error('City not found');
     const data = await res.json();
     const temp = data.main.temp;
     const desc = data.weather[0].description;
@@ -93,7 +105,7 @@ async function getWeather(city=null, lat=null, lon=null){
     const latU = data.coord.lat;
     const lonU = data.coord.lon;
 
-    map.setView([latU, lonU],8);
+    map.setView([latU, lonU], 8);
     L.marker([latU, lonU]).addTo(map);
 
     // 天气卡片
@@ -123,11 +135,11 @@ async function getWeather(city=null, lat=null, lon=null){
       KR: { food: 'Kimchi 🥬', greeting: '안녕하세요', etiquette: 'Two hands 🙇' },
       TH: { food: 'Pad Thai 🍜', greeting: 'สวัสดีครับ/ค่ะ', etiquette: 'Wai 🙏' },
     };
-    const cult = templates[countryCode]||{ food:'N/A', greeting:'N/A', etiquette:'N/A' };
+    const cult = templates[countryCode] || { food: 'N/A', greeting: 'N/A', etiquette: 'N/A' };
 
     cultureFront.innerHTML = `
       <h3>🌍 ${i18n.culturalInfo[currentLang]} ${name}</h3>
-      <img src="${flag}" alt="Flag of ${name}" style="width:80px;"/>
+      <img src="${flag}" alt="Flag of ${name}" style="width:80px;" />
       <p><strong>${i18n.languageLabel[currentLang]}</strong> ${langs}</p>
     `;
     cultureBack.innerHTML = `
@@ -137,29 +149,34 @@ async function getWeather(city=null, lat=null, lon=null){
     `;
 
     addHistory(city);
-  } catch(err){
+  } catch (err) {
     weatherFront.innerHTML = i18n.error[currentLang];
     console.error(err);
-  } finally { hideLoading(); }
+  } finally {
+    hideLoading();
+  }
 }
 
 document.getElementById('searchBtn').onclick = () => getWeather();
 document.getElementById('useLocationBtn').onclick = () => getLocationWeather();
 
 // 获取地理位置
-function getLocationWeather(){
-  if(!navigator.geolocation) return alert('Geolocation not supported');
+function getLocationWeather() {
+  if (!navigator.geolocation) return alert('Geolocation not supported');
   showLoading();
   navigator.geolocation.getCurrentPosition(async pos => {
-    const { latitude:lat, longitude:lon } = pos.coords;
+    const { latitude: lat, longitude: lon } = pos.coords;
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
       const data = await res.json();
-      const city = data.address.city||data.address.town||data.address.village||data.address.state;
-      if(city) getWeather(city,lat,lon);
+      const city = data.address.city || data.address.town || data.address.village || data.address.state;
+      if (city) getWeather(city, lat, lon);
       else alert('Could not determine city');
-    } catch(err){ console.error(err); }
-    finally{ hideLoading(); }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      hideLoading();
+    }
   }, () => { alert('Unable to retrieve location'); hideLoading(); });
 }
 
@@ -170,32 +187,32 @@ document.querySelectorAll('.info-card').forEach(card => {
 
 // 主题切换
 const toggleBtn = document.getElementById('toggleTheme');
-function loadTheme(){
-  const t = localStorage.getItem('theme')||'light';
-  document.body.classList.toggle('dark-theme', t==='dark');
+function loadTheme() {
+  const t = localStorage.getItem('theme') || 'light';
+  document.body.classList.toggle('dark-theme', t === 'dark');
 }
 toggleBtn.addEventListener('click', () => {
   const isDark = document.body.classList.toggle('dark-theme');
-  localStorage.setItem('theme', isDark?'dark':'light');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
 loadTheme();
 
 // 多语言支持
-function highlightLang(){
-  document.querySelectorAll('.language-switch button').forEach(btn => btn.classList.toggle('active', btn.dataset.lang===currentLang));
+function highlightLang() {
+  document.querySelectorAll('.language-switch button').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === currentLang));
 }
 document.querySelectorAll('.language-switch button').forEach(btn => btn.addEventListener('click', () => {
   currentLang = btn.dataset.lang;
   localStorage.setItem('language', currentLang);
   applyTranslations();
 }));
-function applyTranslations(){
+function applyTranslations() {
   document.title = i18n.title[currentLang];
   document.querySelector('.title').textContent = i18n.title[currentLang];
   document.getElementById('cityInput').placeholder = i18n.inputPlaceholder[currentLang];
   document.getElementById('searchBtn').textContent = `🔍 ${i18n.search[currentLang]}`;
   document.getElementById('useLocationBtn').textContent = i18n.useLocation[currentLang];
   highlightLang();
-  if(localStorage.getItem('lastCity')) getWeather(localStorage.getItem('lastCity'));
+  if (localStorage.getItem('lastCity')) getWeather(localStorage.getItem('lastCity'));
 }
 applyTranslations();
