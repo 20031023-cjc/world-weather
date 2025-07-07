@@ -1,324 +1,280 @@
-// 🌐 多语言 定义
-let currentLang = localStorage.getItem("language") || "en";
+/* 🌟 全局基础 */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #fdf6ec, #faeee7);
+  color: #4b2e1e;
+  text-align: center;
+  transition: background 0.5s ease, color 0.3s ease;
+}
 
-const i18n = {
-  title: { en: "WorldView", zh: "世界视图", ja: "ワールドビュー" },
-  inputPlaceholder: { en: "Enter city name", zh: "输入城市名称", ja: "都市名を入力" },
-  search: { en: "Search", zh: "搜索", ja: "検索" },
-  useLocation: { en: "📍 Use My Location", zh: "📍 使用当前位置", ja: "📍 現在地を使う" },
-  weatherTitle: { en: "Weather in", zh: "天气：", ja: "天気：" },
-  culturalInfo: { en: "Cultural Info", zh: "文化信息", ja: "文化情報" },
-  languageLabel: { en: "Official Language(s):", zh: "官方语言：", ja: "公用語：" },
-  food: { en: "Famous Food:", zh: "代表食物：", ja: "名物料理：" },
-  greeting: { en: "Greeting:", zh: "问候语：", ja: "あいさつ：" },
-  etiquette: { en: "Etiquette:", zh: "礼仪：", ja: "マナー：" },
-  error: { en: "⚠️ Could not fetch weather data.", zh: "⚠️ 无法获取天气信息。", ja: "⚠️ 天気情報を取得できませんでした。" },
-  favorites: { en: "Favorites", zh: "收藏城市", ja: "お気に入り" }
-};
+header {
+  background: linear-gradient(to right, #f3d5b5, #e7bb94);
+  color: #4b2e1e;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: background 0.5s ease;
+}
 
-// 初始化地图
-const map = L.map('map').setView([20, 0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: 'Map data © OpenStreetMap contributors',
-}).addTo(map);
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
 
-map.on('click', async (e) => {
-  const lat = e.latlng.lat;
-  const lon = e.latlng.lng;
+.language-switch {
+  margin-top: 1rem;
+}
 
-  try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-    const data = await res.json();
-    const city = data.address.city || data.address.town || data.address.village || data.address.state;
+.language-switch button {
+  margin: 0 5px;
+  padding: 8px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: #f1c27b;
+  color: #fffaf5;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
 
-    if (city) {
-      document.getElementById("cityInput").value = city;
-      getWeather(city, lat, lon);
-    } else {
-      alert("No city found at this location.");
-    }
-  } catch (err) {
-    console.error("Reverse geocoding failed", err);
+.language-switch button:hover {
+  background-color: #e0a96d;
+  transform: scale(1.05);
+}
+
+/* 🔍 搜索区 */
+.search-box {
+  margin: 2rem auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-box input[type="text"] {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1px solid #ddd0c8;
+  border-radius: 8px;
+  width: 250px;
+  max-width: 80%;
+  background-color: #fffaf5;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.search-box input[type="text"]:focus {
+  outline: none;
+  background-color: #fff3e6;
+  box-shadow: 0 0 0 3px #ffd7b5;
+}
+
+.search-box button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5c89c;
+  color: #4b2e1e;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.search-box button:hover {
+  background-color: #f1b97e;
+  transform: scale(1.05);
+}
+
+/* 🗺️ 地图 */
+#map {
+  height: 420px;
+  margin: 30px auto;
+  max-width: 680px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* 💡 卡片风格（天气、文化、收藏） */
+#weatherInfo,
+#cultureInfo,
+#favoritesList {
+  margin: 2rem auto;
+  padding: 1.8rem;
+  background: #fffefc;
+  border-radius: 20px;
+  max-width: 680px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  text-align: left;
+  line-height: 1.7;
+  font-size: 1rem;
+  color: #4b2e1e;
+  backdrop-filter: blur(8px);
+}
+
+#weatherInfo h2,
+#cultureInfo h3,
+#favoritesList h3 {
+  color: #b45f06;
+}
+
+/* ❤️ 收藏城市按钮 */
+#favoritesList button {
+  display: inline-block;
+  margin: 6px 8px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #f3d5b5;
+  border-radius: 10px;
+  color: #4b2e1e;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#favoritesList button:hover {
+  background-color: #e4ba91;
+  transform: scale(1.05);
+}
+
+/* 📍 夜间模式按钮 */
+#toggleMode {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 999;
+  background-color: #ffffffaa;
+  color: #222;
+  border: none;
+  border-radius: 50%;
+  padding: 10px 14px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+#toggleMode:hover {
+  background-color: #dddddd;
+}
+
+/* 🌑 夜间模式 */
+body.dark {
+  background: #0e0e1a;
+  color: #f0f0f0;
+}
+
+body.dark header {
+  background: linear-gradient(to right, #1f1f3a, #2a2a4d);
+  color: #f0f0f0;
+}
+
+body.dark .language-switch button,
+body.dark .search-box button {
+  background-color: #444;
+  color: #f0f0f0;
+}
+
+body.dark .search-box input[type="text"] {
+  background-color: #1f1f1f;
+  color: #f0f0f0;
+  border: 1px solid #555;
+}
+
+body.dark #weatherInfo,
+body.dark #cultureInfo,
+body.dark #favoritesList {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 📱 响应式 */
+@media screen and (max-width: 600px) {
+  #map,
+  #weatherInfo,
+  #cultureInfo,
+  #favoritesList {
+    width: 92%;
   }
-});
 
-// 收藏功能
-function saveFavorite(city) {
-  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  if (!favorites.includes(city)) {
-    favorites.push(city);
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-    updateFavoritesUI();
+  .search-box {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-box input[type="text"],
+  .search-box button {
+    width: 90%;
+    max-width: 320px;
+  }
+
+  .language-switch button {
+    margin-bottom: 0.5rem;
   }
 }
 
-function updateFavoritesUI() {
-  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  const container = document.getElementById("favoritesList");
-  container.innerHTML = `<h3>${i18n.favorites[currentLang]}</h3>`;
-  favorites.forEach(city => {
-    const btn = document.createElement("button");
-    btn.textContent = city;
-    btn.onclick = () => getWeather(city);
-    container.appendChild(btn);
-  });
+/* 💫 hover 效果发光 */
+button:hover {
+  box-shadow: 0 0 12px rgba(255, 200, 150, 0.5);
 }
 
-async function getWeather(city = null, lat = null, lon = null) {
-  const cityInput = document.getElementById("cityInput");
-  const weatherInfo = document.getElementById("weatherInfo");
-  const cultureInfo = document.getElementById("cultureInfo");
-
-  city = city || cityInput.value;
-  if (!city) {
-    weatherInfo.innerHTML = i18n.error[currentLang];
-    cultureInfo.innerHTML = "";
-    return;
-  }
-
-  const apiKey = "d0c82cf6ceae567537e0079215ab67dd";
-  const url = lat && lon
-    ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
-    : `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`;
-
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("City not found");
-    const data = await res.json();
-
-    const temperature = data.main.temp;
-    const condition = data.weather[0].description;
-    const icon = data.weather[0].icon;
-    const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-    const countryCode = data.sys.country;
-    const latUsed = data.coord.lat;
-    const lonUsed = data.coord.lon;
-
-    map.setView([latUsed, lonUsed], 8);
-    L.marker([latUsed, lonUsed]).addTo(map);
-
-    weatherInfo.innerHTML = `
-      <h2>${i18n.weatherTitle[currentLang]} ${city} <button onclick="saveFavorite('${city}')">❤️</button></h2>
-      <img src="${iconUrl}" alt="${condition}" />
-      <p>🌡 ${temperature}°C, ${condition}</p>
-    `;
-
-    const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
-    const countryData = await countryRes.json();
-    const country = countryData[0];
-    const flag = country.flags.svg;
-    const language = Object.values(country.languages).join(", ");
-    const countryName = country.name.common;
-
-    const cultureTemplates = {
-      JP: { food: "Sushi 🍣", greeting: "こんにちは", etiquette: "Bowing 🙇‍♂️" },
-      CN: { food: "Dumplings 🥟", greeting: "你好", etiquette: "Respect with both hands 🤲" },
-      US: { food: "Burger 🍔", greeting: "Hello", etiquette: "Handshake 🤝" },
-      FR: { food: "Baguette 🥖", greeting: "Bonjour", etiquette: "Cheek kissing 👋" },
-      KR: { food: "Kimchi 🥬", greeting: "안녕하세요", etiquette: "Two hands for everything 🙇" },
-      TH: { food: "Pad Thai 🍜", greeting: "สวัสดีครับ/ค่ะ", etiquette: "Wai greeting 🙏" },
-    };
-
-    const culture = cultureTemplates[countryCode] || { food: "N/A", greeting: "N/A", etiquette: "N/A" };
-
-    cultureInfo.innerHTML = `
-      <h3>🌍 ${i18n.culturalInfo[currentLang]}: ${countryName}</h3>
-      <img src="${flag}" alt="Flag of ${countryName}" style="width: 100px; margin: 10px 0;" />
-      <p><strong>${i18n.languageLabel[currentLang]}</strong> ${language}</p>
-      <p><strong>${i18n.food[currentLang]}</strong> ${culture.food}</p>
-      <p><strong>${i18n.greeting[currentLang]}</strong> ${culture.greeting}</p>
-      <p><strong>${i18n.etiquette[currentLang]}</strong> ${culture.etiquette}</p>
-    `;
-  } catch (err) {
-    weatherInfo.innerHTML = i18n.error[currentLang];
-    cultureInfo.innerHTML = "";
-    console.error(err);
-  }
+/* ❤️ 收藏按钮点击动画 */
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.favorite-popped {
+  animation: heartPop 0.4s ease;
 }
 
-function getLocationWeather() {
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-      const data = await res.json();
-      const city = data.address.city || data.address.town || data.address.village || data.address.state;
-
-      if (city) {
-        document.getElementById("cityInput").value = city;
-        getWeather(city, lat, lon);
-      } else {
-        alert("Could not determine city from location.");
-      }
-    } catch (err) {
-      console.error("Location fetch failed", err);
-    }
-  }, () => {
-    alert("Unable to retrieve your location.");
-  });
+/* 🌙 夜间按钮旋转动画 */
+@keyframes rotateBtn {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg); }
+}
+.rotating {
+  animation: rotateBtn 0.6s ease;
 }
 
-function highlightActiveLanguage() {
-  document.querySelectorAll(".language-switch button").forEach((btn) => {
-    btn.classList.toggle("active", btn.getAttribute("data-lang") === currentLang);
-  });
-}
-
-document.querySelectorAll(".language-switch button").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const lang = btn.getAttribute("data-lang");
-    currentLang = lang;
-    localStorage.setItem("language", lang);
-    applyTranslations();
-  });
-});
-
-function applyTranslations() {
-  document.title = i18n.title[currentLang];
-  document.querySelector("h1").textContent = i18n.title[currentLang];
-  document.getElementById("cityInput").placeholder = i18n.inputPlaceholder[currentLang];
-  const buttons = document.querySelectorAll(".search-box button");
-  buttons[0].textContent = `🔍 ${i18n.search[currentLang]}`;
-  buttons[1].textContent = i18n.useLocation[currentLang];
-  highlightActiveLanguage();
-  updateFavoritesUI();
-
-  if (document.getElementById("weatherInfo").innerHTML) {
-    const city = document.getElementById("cityInput").value;
-    getWeather(city);
+/* 📍 地图点击涟漪 */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
   }
 }
-
-applyTranslations();
-
-// 🌙 夜间模式逻辑
-const toggleButton = document.getElementById("toggleMode");
-
-// 尝试自动匹配系统暗色模式
-function autoDetectNightMode() {
-  const isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const saved = localStorage.getItem("nightMode");
-  if (saved === "dark" || (!saved && isDark)) {
-    document.body.classList.add("dark");
-    toggleButton.textContent = "☀️";
-  }
+.map-ripple {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  animation: ripple 0.6s ease-out;
+  z-index: 9999;
 }
 
-toggleButton.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-  localStorage.setItem("nightMode", isDark ? "dark" : "light");
-  toggleButton.textContent = isDark ? "☀️" : "🌙";
-});
-
-// 页面初始时检测
-autoDetectNightMode();
-
-// ❤️ 收藏按钮添加动画
-function saveFavorite(city) {
-  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  if (!favorites.includes(city)) {
-    favorites.push(city);
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-    updateFavoritesUI();
-  }
-
-  // ❤️ 动画效果：找到按钮并加动画类
-  const heartButton = document.querySelector("#weatherInfo button");
-  if (heartButton) {
-    heartButton.classList.add("favorite-popped");
-    setTimeout(() => heartButton.classList.remove("favorite-popped"), 400);
-  }
+/* 🌌 星空背景 Canvas */
+#starCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  pointer-events: none;
 }
-
-// 🌙 夜间按钮旋转动画
-const toggleButton = document.getElementById("toggleMode");
-toggleButton.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-  localStorage.setItem("nightMode", isDark ? "dark" : "light");
-  toggleButton.textContent = isDark ? "☀️" : "🌙";
-
-  // 🔁 按钮旋转动画
-  toggleButton.classList.add("rotating");
-  setTimeout(() => toggleButton.classList.remove("rotating"), 600);
-});
-
-// 📍 地图点击动画（涟漪效果）
-map.on("click", async (e) => {
-  const lat = e.latlng.lat;
-  const lon = e.latlng.lng;
-
-  // ⭕ 涟漪效果
-  const ripple = document.createElement("div");
-  ripple.classList.add("map-ripple");
-  ripple.style.left = `${e.originalEvent.pageX - 50}px`;
-  ripple.style.top = `${e.originalEvent.pageY - 50}px`;
-  document.body.appendChild(ripple);
-  setTimeout(() => document.body.removeChild(ripple), 600);
-
-  try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-    const data = await res.json();
-    const city = data.address.city || data.address.town || data.address.village || data.address.state;
-
-    if (city) {
-      document.getElementById("cityInput").value = city;
-      getWeather(city, lat, lon);
-    } else {
-      alert("No city found at this location.");
-    }
-  } catch (err) {
-    console.error("Reverse geocoding failed", err);
-  }
-});
-// 🌌 星空背景绘制
-const canvas = document.getElementById("starCanvas");
-const ctx = canvas.getContext("2d");
-let stars = [];
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-function createStars(count) {
-  stars = [];
-  for (let i = 0; i < count; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      radius: Math.random() * 1.5,
-      speed: Math.random() * 0.5 + 0.1,
-    });
-  }
-}
-
-function animateStars() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#ffffff";
-  for (let star of stars) {
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
-    ctx.fill();
-    star.y += star.speed;
-    if (star.y > canvas.height) {
-      star.y = 0;
-      star.x = Math.random() * canvas.width;
-    }
-  }
-  requestAnimationFrame(animateStars);
-}
-
-createStars(100);
-animateStars();
-
