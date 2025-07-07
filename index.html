@@ -1,59 +1,78 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WorldView</title>
-
-  <!-- Leaflet 地图样式 & 脚本 -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- 动画库 -->
+  <!-- Animate.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
-  <!-- 自定义样式 -->
-  <link rel="stylesheet" href="style.css" />
-  <!-- 自定义脚本 -->
-  <script defer src="app.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="hidden">
+    <div class="spinner"></div>
+  </div>
+
   <header class="animate__animated animate__fadeInDown">
-    <h1>🌏 WorldView</h1>
+    <div class="logo animate__animated animate__pulse">🌐</div>
+    <h1 class="title animate__animated animate__rubberBand">WorldView</h1>
+    <button id="toggleTheme" class="theme-btn">🌓</button>
     <div class="language-switch">
-      <button data-lang="en">English</button>
-      <button data-lang="zh">中文</button>
-      <button data-lang="ja">日本語</button>
+      <button data-lang="en">EN</button>
+      <button data-lang="zh">中</button>
+      <button data-lang="ja">日</button>
     </div>
   </header>
 
   <main>
-    <div class="search-box animate__animated animate__fadeInUp">
-      <input type="text" id="cityInput" placeholder="Enter city name" />
-      <button onclick="getWeather()">🔍 Search</button>
-      <button onclick="getLocationWeather()" id="useLocationBtn">📍 Use My Location</button>
+    <div class="controls animate__animated animate__fadeInUp">
+      <div class="search-box">
+        <input type="text" id="cityInput" placeholder="Enter city name"/>
+        <button id="searchBtn">🔍 Search</button>
+        <button id="useLocationBtn">📍 Use My Location</button>
+      </div>
+      <div class="history">
+        <h4>Search History</h4>
+        <ul id="historyList"></ul>
+      </div>
+      <div class="map-style-switch">
+        <label for="mapStyleSelect">Map Style:</label>
+        <select id="mapStyleSelect">
+          <option value="osm">Default</option>
+          <option value="dark">Dark</option>
+          <option value="hydda">Illustrated</option>
+        </select>
+      </div>
     </div>
 
-    <!-- 地图控制按钮 -->
-    <div class="control-buttons">
-      <button onclick="toggleMapStyle()">🗺️ Map Style</button>
-      <button onclick="toggleNightMode()" id="toggleModeBtn">🌙 Night Mode</button>
-    </div>
-
-    <!-- 地图区域 -->
     <div id="map" class="animate__animated animate__fadeIn"></div>
 
-    <!-- 加载中动画 -->
-    <div id="loading" class="loading-spinner" style="display: none;"></div>
-
-    <!-- 天气信息卡 -->
-    <div id="weatherInfo" class="info-card animate__animated animate__fadeInUp"></div>
-    <!-- 文化信息卡 -->
-    <div id="cultureInfo" class="info-card animate__animated animate__fadeInUp"></div>
+    <div class="info-cards">
+      <div class="info-card weather-card">
+        <div class="card-inner">
+          <div class="front"></div>
+          <div class="back"></div>
+        </div>
+      </div>
+      <div class="info-card culture-card">
+        <div class="card-inner">
+          <div class="front"></div>
+          <div class="back"></div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer>
-    <p>Made by Cai Jiacheng | Hosted on GitHub</p>
+    <p>Made by Cai Jiacheng | GitHub: <a href="https://github.com/20031023-cjc" target="_blank">20031023-cjc</a></p>
   </footer>
+
+  <script defer src="app.js"></script>
 </body>
 </html>
