@@ -13,9 +13,10 @@ const i18n = {
   greeting: { en: "Greeting:", zh: "问候语：", ja: "あいさつ：" },
   etiquette: { en: "Etiquette:", zh: "礼仪：", ja: "マナー：" },
   error: { en: "⚠️ Could not fetch weather data.", zh: "⚠️ 无法获取天气信息。", ja: "⚠️ 天気情報を取得できませんでした。" },
+  favorites: { en: "Favorites", zh: "收藏城市", ja: "お気に入り" }
 };
 
-// 地图初始化
+// 初始化地图
 const map = L.map('map').setView([20, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: 'Map data © OpenStreetMap contributors',
@@ -40,6 +41,28 @@ map.on('click', async (e) => {
     console.error("Reverse geocoding failed", err);
   }
 });
+
+// 收藏功能
+function saveFavorite(city) {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  if (!favorites.includes(city)) {
+    favorites.push(city);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    updateFavoritesUI();
+  }
+}
+
+function updateFavoritesUI() {
+  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  const container = document.getElementById("favoritesList");
+  container.innerHTML = `<h3>${i18n.favorites[currentLang]}</h3>`;
+  favorites.forEach(city => {
+    const btn = document.createElement("button");
+    btn.textContent = city;
+    btn.onclick = () => getWeather(city);
+    container.appendChild(btn);
+  });
+}
 
 async function getWeather(city = null, lat = null, lon = null) {
   const cityInput = document.getElementById("cityInput");
@@ -75,7 +98,7 @@ async function getWeather(city = null, lat = null, lon = null) {
     L.marker([latUsed, lonUsed]).addTo(map);
 
     weatherInfo.innerHTML = `
-      <h2>${i18n.weatherTitle[currentLang]} ${city}</h2>
+      <h2>${i18n.weatherTitle[currentLang]} ${city} <button onclick="saveFavorite('${city}')">❤️</button></h2>
       <img src="${iconUrl}" alt="${condition}" />
       <p>🌡 ${temperature}°C, ${condition}</p>
     `;
@@ -84,4 +107,116 @@ async function getWeather(city = null, lat = null, lon = null) {
     const countryData = await countryRes.json();
     const country = countryData[0];
     const flag = country.flags.svg;
-    const la
+    const language = Object.values(country.languages).join(", ");
+    const countryName = country.name.common;
+
+    const cultureTemplates = {
+      JP: { food: "Sushi 🍣", greeting: "こんにちは", etiquette: "Bowing 🙇‍♂️" },
+      CN: { food: "Dumplings 🥟", greeting: "你好", etiquette: "Respect with both hands 🤲" },
+      US: { food: "Burger 🍔", greeting: "Hello", etiquette: "Handshake 🤝" },
+      FR: { food: "Baguette 🥖", greeting: "Bonjour", etiquette: "Cheek kissing 👋" },
+      KR: { food: "Kimchi 🥬", greeting: "안녕하세요", etiquette: "Two hands for everything 🙇" },
+      TH: { food: "Pad Thai 🍜", greeting: "สวัสดีครับ/ค่ะ", etiquette: "Wai greeting 🙏" },
+    };
+
+    const culture = cultureTemplates[countryCode] || { food: "N/A", greeting: "N/A", etiquette: "N/A" };
+
+    cultureInfo.innerHTML = `
+      <h3>🌍 ${i18n.culturalInfo[currentLang]}: ${countryName}</h3>
+      <img src="${flag}" alt="Flag of ${countryName}" style="width: 100px; margin: 10px 0;" />
+      <p><strong>${i18n.languageLabel[currentLang]}</strong> ${language}</p>
+      <p><strong>${i18n.food[currentLang]}</strong> ${culture.food}</p>
+      <p><strong>${i18n.greeting[currentLang]}</strong> ${culture.greeting}</p>
+      <p><strong>${i18n.etiquette[currentLang]}</strong> ${culture.etiquette}</p>
+    `;
+  } catch (err) {
+    weatherInfo.innerHTML = i18n.error[currentLang];
+    cultureInfo.innerHTML = "";
+    console.error(err);
+  }
+}
+
+function getLocationWeather() {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+      const data = await res.json();
+      const city = data.address.city || data.address.town || data.address.village || data.address.state;
+
+      if (city) {
+        document.getElementById("cityInput").value = city;
+        getWeather(city, lat, lon);
+      } else {
+        alert("Could not determine city from location.");
+      }
+    } catch (err) {
+      console.error("Location fetch failed", err);
+    }
+  }, () => {
+    alert("Unable to retrieve your location.");
+  });
+}
+
+function highlightActiveLanguage() {
+  document.querySelectorAll(".language-switch button").forEach((btn) => {
+    btn.classList.toggle("active", btn.getAttribute("data-lang") === currentLang);
+  });
+}
+
+document.querySelectorAll(".language-switch button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const lang = btn.getAttribute("data-lang");
+    currentLang = lang;
+    localStorage.setItem("language", lang);
+    applyTranslations();
+  });
+});
+
+function applyTranslations() {
+  document.title = i18n.title[currentLang];
+  document.querySelector("h1").textContent = i18n.title[currentLang];
+  document.getElementById("cityInput").placeholder = i18n.inputPlaceholder[currentLang];
+  const buttons = document.querySelectorAll(".search-box button");
+  buttons[0].textContent = `🔍 ${i18n.search[currentLang]}`;
+  buttons[1].textContent = i18n.useLocation[currentLang];
+  highlightActiveLanguage();
+  updateFavoritesUI();
+
+  if (document.getElementById("weatherInfo").innerHTML) {
+    const city = document.getElementById("cityInput").value;
+    getWeather(city);
+  }
+}
+
+applyTranslations();
+
+// 🌙 夜间模式逻辑
+const toggleButton = document.getElementById("toggleMode");
+
+// 尝试自动匹配系统暗色模式
+function autoDetectNightMode() {
+  const isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const saved = localStorage.getItem("nightMode");
+  if (saved === "dark" || (!saved && isDark)) {
+    document.body.classList.add("dark");
+    toggleButton.textContent = "☀️";
+  }
+}
+
+toggleButton.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  localStorage.setItem("nightMode", isDark ? "dark" : "light");
+  toggleButton.textContent = isDark ? "☀️" : "🌙";
+});
+
+// 页面初始时检测
+autoDetectNightMode();
