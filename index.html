@@ -17,6 +17,9 @@
   <script defer src="app.js"></script>
 </head>
 <body>
+  <!-- 🌙 夜间模式切换按钮 -->
+  <button id="toggleMode">🌙</button>
+
   <header class="animate__animated animate__fadeInDown">
     <h1>🌏 WorldView</h1>
     <div class="language-switch">
@@ -31,25 +34,15 @@
       <input type="text" id="cityInput" placeholder="Enter city name" />
       <button onclick="getWeather()">🔍 Search</button>
       <button onclick="getLocationWeather()" id="useLocationBtn">📍 Use My Location</button>
-      <button onclick="saveFavorite()" id="saveBtn">⭐ Save</button> <!-- 收藏按钮 -->
     </div>
+
+    <!-- 🧡 收藏城市列表区域 -->
+    <div id="favoritesList" class="animate__animated animate__fadeInUp"></div>
 
     <div id="map" class="animate__animated animate__fadeIn"></div>
 
     <div id="weatherInfo" class="animate__animated animate__fadeInUp"></div>
     <div id="cultureInfo" class="animate__animated animate__fadeInUp"></div>
-
-    <!-- 收藏 & 历史区域 -->
-    <div class="saved-section">
-      <div>
-        <h3>⭐ Favorites</h3>
-        <div id="favoritesContainer"></div>
-      </div>
-      <div>
-        <h3>🕒 History</h3>
-        <div id="historyContainer"></div>
-      </div>
-    </div>
   </main>
 
   <footer>
